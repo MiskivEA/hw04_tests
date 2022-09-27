@@ -34,7 +34,7 @@ class PostFormTest(TestCase):
         )
         self.assertEqual(
             Post.objects.count(),
-            self.posts_count+1,
+            self.posts_count + 1,
             'Новый пост не создан'
         )
 

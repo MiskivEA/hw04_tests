@@ -128,9 +128,3 @@ class PostViewTest(TestCase):
             data=form_data
         )
         self.assertEqual(Post.objects.get(pk=post_id).text, form_data['text'])
-
-
-
-
-
-
