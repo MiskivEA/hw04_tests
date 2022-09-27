@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 
-from ..models import Post, Group
+from ..models import Group, Post
 
 User = get_user_model()
 
@@ -29,7 +29,8 @@ class PostURLTest(TestCase):
         self.authorized_client.force_login(PostURLTest.user)
 
         self.authorized_client_not_author = Client()
-        self.authorized_client_not_author.force_login(PostURLTest.user_not_author)
+        self.authorized_client_not_author.force_login(
+            PostURLTest.user_not_author)
 
     def test_urls_uses_correct_template(self):
         """Проверка соответствия шаблонов URL-адресам"""

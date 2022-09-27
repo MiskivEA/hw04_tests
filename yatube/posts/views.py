@@ -5,7 +5,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .forms import PostForm
 from .models import Group, Post, User
 
-
 DISPLAY_POST = 10
 
 

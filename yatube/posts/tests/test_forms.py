@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
-from ..forms import PostForm
-from ..models import Post
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from ..models import Post
+
 User = get_user_model()
 
 
@@ -55,4 +56,3 @@ class PostFormTest(TestCase):
         print('Надеюсь я не забуду это убрать')
         print(cur_data, form_data)
         self.assertEqual(cur_data, form_data)
-
