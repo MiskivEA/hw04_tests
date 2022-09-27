@@ -70,7 +70,8 @@ class PostViewTest(TestCase):
         posts = PostViewTest.group.posts.order_by('-pub_date')[:10]
         response = self.authorized_client.get(
             reverse(
-                'posts:group_list', kwargs={'slug': PostViewTest.group.slug}
+                'posts:group_list',
+                kwargs={'slug': PostViewTest.group.slug}
             )
         )
         for i in range(len(posts)):
@@ -80,7 +81,8 @@ class PostViewTest(TestCase):
         posts = PostViewTest.user.posts.order_by('-pub_date')[:10]
         response = self.authorized_client.get(
             reverse(
-                'posts:profile', kwargs={'username': PostViewTest.user.username}
+                'posts:profile',
+                kwargs={'username': PostViewTest.user.username}
             )
         )
         for i in range(len(posts)):
@@ -110,7 +112,8 @@ class PostViewTest(TestCase):
         self.assertEqual(posts_count_1 + 1, posts_count_2)
         self.assertRedirects(
             response,
-            reverse('posts:profile', kwargs={'username': PostViewTest.user})
+            reverse('posts:profile',
+                    kwargs={'username': PostViewTest.user})
         )
 
     def test_form_edit(self):
@@ -120,7 +123,8 @@ class PostViewTest(TestCase):
             'author': PostViewTest.user
         }
         self.authorized_client.post(
-            reverse('posts:post_edit', kwargs={'post_id': post_id}),
+            reverse('posts:post_edit',
+                    kwargs={'post_id': post_id}),
             data=form_data
         )
         self.assertEqual(Post.objects.get(pk=post_id).text, form_data['text'])

@@ -33,7 +33,7 @@ class PaginatorViewTest(TestCase):
         self.assertEqual(len(response.context['page_obj']), 10)
 
     def test_index_second_page_contains_three_records(self):
-        response = self.client.get(reverse('posts:index')+'?page=2')
+        response = self.client.get(reverse('posts:index') + '?page=2')
         self.assertEqual(len(response.context['page_obj']), 3)
 
     def test_profile_first_page_contains_ten_records(self):
@@ -68,6 +68,6 @@ class PaginatorViewTest(TestCase):
             reverse(
                 'posts:group_list',
                 kwargs={'slug': PaginatorViewTest.group.slug}
-            )+'?page=2'
+            ) + '?page=2'
         )
         self.assertEqual(len(response.context['page_obj']), 3)
