@@ -23,6 +23,10 @@ class PostURLTest(TestCase):
         )
 
     def setUp(self):
+        self.post_id = str(PostURLTest.post.pk)
+        self.username = PostURLTest.user.username
+        self.slug = str(PostURLTest.group.slug)
+
         self.guest_client = Client()
 
         self.authorized_client = Client()
@@ -34,12 +38,13 @@ class PostURLTest(TestCase):
 
     def test_urls_uses_correct_template(self):
         """Проверка соответствия шаблонов URL-адресам"""
+
         url_template_names = {
             '/': 'posts/index.html',
-            '/group/test-slug/': 'posts/group_list.html',
-            '/profile/author/': 'posts/profile.html',
-            '/posts/1/edit/': 'posts/create_post.html',
-            '/posts/1/': 'posts/post_detail.html',
+            '/group/' + self.slug + '/': 'posts/group_list.html',
+            '/profile/' + self.username + '/': 'posts/profile.html',
+            '/posts/' + self.post_id + '/edit/': 'posts/create_post.html',
+            '/posts/' + self.post_id + '/': 'posts/post_detail.html',
             '/create/': 'posts/create_post.html',
         }
         for url, template in url_template_names.items():
@@ -54,14 +59,15 @@ class PostURLTest(TestCase):
     def test_exists_urls_for_everyone(self):
         """Проверка доступности страниц для
         неавторизованого пользователя"""
+
         check_urls = {
             '/': 200,
-            '/group/test-slug/': 200,
-            '/posts/1/': 200,
+            '/group/' + self.slug + '/': 200,
+            '/posts/' + self.post_id + '/': 200,
             '/unexisting_page/': 404
         }
         for url, status_code in check_urls.items():
-            with self.subTest(field=url):
+            with self.subTest(url=url):
                 response = self.guest_client.get(url)
                 self.assertEqual(
                     response.status_code,
@@ -69,12 +75,39 @@ class PostURLTest(TestCase):
                     'Ответ на запрос не соответствует ожидаомому'
                 )
 
-    def test_exist_edit(self):
+    def test_exists_edit(self):
         """Проверка доступности редактирования поста для
         авторизованого пользователя"""
-        response = self.authorized_client.get('/posts/1/edit/')
+
+        response = self.authorized_client.get('/posts/' + self.post_id + '/edit/')
         self.assertEqual(
             response.status_code,
             200,
             'Доступ к редактированию поста должен быть только у его автора'
+        )
+
+    def test_create_edit_not_authorized_user_redirects(self):
+        """Проверка редиректов неавторизованого пользователя
+        при попытке создания и редактирования постов"""
+
+        response = self.guest_client.get('/create/')
+        self.assertRedirects(
+            response,
+            '/auth/login/?next=/create/'
+        )
+        response = self.guest_client.get('/posts/' + self.post_id + '/edit/')
+        self.assertRedirects(
+            response,
+            '/auth/login/?next=/posts/' + self.post_id + '/edit/'
+        )
+
+    def test_edit_not_author_redirects(self):
+        """Не автор поста, при попытке редактирования
+        будет редиректиться на просмотр, во всяком случае,
+        пока я не узнаю куда надо =) Это мы и проверим"""
+
+        response = self.authorized_client_not_author.get('/posts/' + self.post_id + '/edit/')
+        self.assertRedirects(
+            response,
+            '/posts/' + self.post_id + '/'
         )

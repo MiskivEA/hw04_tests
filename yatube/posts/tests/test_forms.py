@@ -49,7 +49,7 @@ class PostFormTest(TestCase):
     def test_form_edit(self):
         post_id = PostFormTest.post.pk
         form_data = {
-            'text': 'Текст поста после редактирования редактирования',
+            'text': 'Текст поста после редактирования',
             'group': PostFormTest.group.pk
         }
         self.authorized_client.post(
