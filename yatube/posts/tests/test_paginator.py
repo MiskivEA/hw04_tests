@@ -17,12 +17,16 @@ class PaginatorViewTest(TestCase):
             slug='test-slug',
             description='test description'
         )
-        for i in range(13):
-            cls.post = Post.objects.create(
-                text='Тестовый пост',
+
+        Post.objects.bulk_create([
+            Post(
+                text='Тестовый пост-' + str(i),
                 author=cls.user,
                 group=cls.group
             )
+            for i in range(13)
+        ])
+
 
     def setUp(self):
         self.client = Client()
