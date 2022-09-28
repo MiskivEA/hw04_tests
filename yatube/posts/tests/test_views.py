@@ -23,8 +23,8 @@ class PostViewTest(TestCase):
                 author=cls.user,
                 group=cls.group,
             )
-        cls.group = Group.objects.get(pk=1)
-        cls.post = Post.objects.get(pk=1)
+        cls.group = Group.objects.first()
+        cls.post = Post.objects.first()
 
     def setUp(self):
         self.authorized_client = Client()
@@ -89,10 +89,55 @@ class PostViewTest(TestCase):
             self.assertEqual(response.context['page_obj'][i], posts[i])
 
     def test_one_post_filter_id(self):
-        posts = Post.objects.get(pk=1)
+        post_id = PostViewTest.post.pk
+        posts = Post.objects.get(pk=post_id)
         response = self.authorized_client.get(
             reverse(
-                'posts:posts', kwargs={'post_id': 1}
+                'posts:posts', kwargs={'post_id': post_id}
             )
         )
         self.assertEqual(response.context['post'], posts)
+
+    def test_group_posts(self):
+        """Пост одной группы не должен отображаться
+        на странице другой группы"""
+
+        test_group_1 = Group.objects.create(
+            title='group_1_title',
+            slug='group_1_slug',
+            description='group_1_slug'
+        )
+        test_group_2 = Group.objects.create(
+            title='group_2_title',
+            slug='group_2_slug',
+            description='group_2_slug'
+        )
+        Post.objects.create(
+            text='тестирование работы групп',
+            author=PostViewTest.user,
+            group=test_group_1
+        )
+        Post.objects.bulk_create([
+            Post(
+                text='Пост для 2й группы номер ' + str(i),
+                author=PostViewTest.user,
+                group=test_group_2
+            ) for i in range(10)
+        ])
+        response_group_1 = self.authorized_client.get(
+            reverse(
+                'posts:group_list',
+                kwargs={'slug': test_group_1.slug}
+            )
+        )
+        response_group_2 = self.authorized_client.get(
+            reverse(
+                'posts:group_list',
+                kwargs={'slug': test_group_2.slug}
+            )
+        )
+        for i in range(10):
+            self.assertNotEqual(
+                response_group_2.context['page_obj'][i],
+                response_group_1.context['page_obj'][0]
+            )
