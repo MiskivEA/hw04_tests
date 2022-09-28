@@ -27,7 +27,6 @@ class PaginatorViewTest(TestCase):
             for i in range(13)
         ])
 
-
     def setUp(self):
         self.client = Client()
         self.client.force_login(PaginatorViewTest.user)

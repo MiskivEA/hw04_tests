@@ -79,7 +79,8 @@ class PostURLTest(TestCase):
         """Проверка доступности редактирования поста для
         авторизованого пользователя"""
 
-        response = self.authorized_client.get('/posts/' + self.post_id + '/edit/')
+        response = self.authorized_client.get(
+            '/posts/' + self.post_id + '/edit/')
         self.assertEqual(
             response.status_code,
             200,
@@ -106,7 +107,8 @@ class PostURLTest(TestCase):
         будет редиректиться на просмотр, во всяком случае,
         пока я не узнаю куда надо =) Это мы и проверим"""
 
-        response = self.authorized_client_not_author.get('/posts/' + self.post_id + '/edit/')
+        response = self.authorized_client_not_author.get(
+            '/posts/' + self.post_id + '/edit/')
         self.assertRedirects(
             response,
             '/posts/' + self.post_id + '/'

@@ -96,5 +96,3 @@ class PostViewTest(TestCase):
             )
         )
         self.assertEqual(response.context['post'], posts)
-
-

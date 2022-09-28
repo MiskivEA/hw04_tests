@@ -59,5 +59,11 @@ class PostFormTest(TestCase):
             ),
             data=form_data
         )
-        self.assertEqual(Post.objects.get(pk=post_id).text, form_data['text'])
-        self.assertEqual(Post.objects.get(pk=post_id).group.pk, form_data['group'])
+        self.assertEqual(
+            Post.objects.get(pk=post_id).text,
+            form_data['text']
+        )
+        self.assertEqual(
+            Post.objects.get(pk=post_id).group.pk,
+            form_data['group']
+        )
