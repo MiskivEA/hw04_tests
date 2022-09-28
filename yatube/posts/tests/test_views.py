@@ -97,34 +97,4 @@ class PostViewTest(TestCase):
         )
         self.assertEqual(response.context['post'], posts)
 
-    def test_form_create(self):
-        posts_count_1 = Post.objects.count()
-        form_data = {
-            'text': 'Тестовый текст из формы',
-            'author': PostViewTest.user
-        }
-        response = self.authorized_client.post(
-            reverse('posts:post_create'),
-            data=form_data,
-            follow=True
-        )
-        posts_count_2 = Post.objects.count()
-        self.assertEqual(posts_count_1 + 1, posts_count_2)
-        self.assertRedirects(
-            response,
-            reverse('posts:profile',
-                    kwargs={'username': PostViewTest.user})
-        )
 
-    def test_form_edit(self):
-        post_id = 5
-        form_data = {
-            'text': 'Текст поста после редактирования редактирования',
-            'author': PostViewTest.user
-        }
-        self.authorized_client.post(
-            reverse('posts:post_edit',
-                    kwargs={'post_id': post_id}),
-            data=form_data
-        )
-        self.assertEqual(Post.objects.get(pk=post_id).text, form_data['text'])
