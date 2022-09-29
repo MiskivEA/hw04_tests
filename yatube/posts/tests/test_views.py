@@ -89,6 +89,9 @@ class PostViewTest(TestCase):
             self.assertEqual(response.context['page_obj'][i], posts[i])
 
     def test_one_post_filter_id(self):
+        """Проверка работы функции вывода
+        нужного поста на станицу
+        """
         post_id = PostViewTest.post.pk
         posts = Post.objects.get(pk=post_id)
         response = self.authorized_client.get(
@@ -99,45 +102,35 @@ class PostViewTest(TestCase):
         self.assertEqual(response.context['post'], posts)
 
     def test_group_posts(self):
-        """Пост одной группы не должен отображаться
-        на странице другой группы"""
-
-        test_group_1 = Group.objects.create(
-            title='group_1_title',
-            slug='group_1_slug',
-            description='group_1_slug'
-        )
-        test_group_2 = Group.objects.create(
-            title='group_2_title',
-            slug='group_2_slug',
-            description='group_2_slug'
-        )
-        Post.objects.create(
-            text='тестирование работы групп',
-            author=PostViewTest.user,
-            group=test_group_1
-        )
-        Post.objects.bulk_create([
-            Post(
-                text='Пост для 2й группы номер ' + str(i),
-                author=PostViewTest.user,
-                group=test_group_2
-            ) for i in range(10)
-        ])
-        response_group_1 = self.authorized_client.get(
+        """ Пост одной группы не должен отображаться на
+            странице другой группы
+        1.  Если создать один пост для группы, то на странице
+            группы будет виден только один пост
+        2.  Если создать некое количество постов группы, то
+            количество постов на странице группы не будет отличаться
+        3.  Если создать один пост для группы, то на странице
+            группы будет отображаться тот самый пост
+            с текстом и группой
+        """
+        response = self.authorized_client.get(
             reverse(
                 'posts:group_list',
-                kwargs={'slug': test_group_1.slug}
+                kwargs={'slug': PostViewTest.group.slug}
             )
         )
-        response_group_2 = self.authorized_client.get(
-            reverse(
-                'posts:group_list',
-                kwargs={'slug': test_group_2.slug}
-            )
+        self.assertEqual(
+            len(response.context['page_obj']),
+            1
         )
-        for i in range(10):
-            self.assertNotEqual(
-                response_group_2.context['page_obj'][i],
-                response_group_1.context['page_obj'][0]
-            )
+        self.assertEqual(
+            len(response.context['page_obj']),
+            PostViewTest.group.posts.count()
+        )
+        self.assertEqual(
+            response.context['page_obj'][0].text,
+            PostViewTest.group.posts.first().text
+        )
+        self.assertEqual(
+            response.context['page_obj'][0].group.pk,
+            PostViewTest.group.posts.first().group.pk
+        )

@@ -28,6 +28,11 @@ class PostFormTest(TestCase):
         self.authorized_client.force_login(PostFormTest.user)
 
     def test_form_create(self):
+        """Тестирование создания форм.
+        1. Проверка создания поста по факту уведичения их количества в БД
+        2. Проверка редиректа после создания поста
+        3. Проверка данных после создания поста
+        """
         posts_count_1 = Post.objects.count()
         form_data = {
             'text': 'Тестовый текст из формы',
@@ -45,8 +50,24 @@ class PostFormTest(TestCase):
             reverse('posts:profile',
                     kwargs={'username': PostFormTest.user.username})
         )
+        self.assertEqual(
+            response.context['page_obj'][0].text,
+            Post.objects.first().text
+        )
+        self.assertEqual(
+            response.context['page_obj'][0].author.username,
+            Post.objects.first().author.username
+        )
+        self.assertEqual(
+            response.context['page_obj'][0].group.pk,
+            Post.objects.first().group.pk
+        )
 
     def test_form_edit(self):
+        """Тестирование формы редактирования поста.
+        Сравнение данных поста после редактирования
+        с данными, переданными в форму
+        """
         post_id = PostFormTest.post.pk
         form_data = {
             'text': 'Текст поста после редактирования',
