@@ -41,10 +41,10 @@ class PostURLTest(TestCase):
 
         url_template_names = {
             '/': 'posts/index.html',
-            '/group/' + self.slug + '/': 'posts/group_list.html',
-            '/profile/' + self.username + '/': 'posts/profile.html',
-            '/posts/' + self.post_id + '/edit/': 'posts/create_post.html',
-            '/posts/' + self.post_id + '/': 'posts/post_detail.html',
+            f'/group/{self.slug}/': 'posts/group_list.html',
+            f'/profile/{self.username}/': 'posts/profile.html',
+            f'/posts/{self.post_id}/edit/': 'posts/create_post.html',
+            f'/posts/{self.post_id}/': 'posts/post_detail.html',
             '/create/': 'posts/create_post.html',
         }
         for url, template in url_template_names.items():
@@ -62,8 +62,8 @@ class PostURLTest(TestCase):
 
         check_urls = {
             '/': 200,
-            '/group/' + self.slug + '/': 200,
-            '/posts/' + self.post_id + '/': 200,
+            f'/group/{self.slug}/': 200,
+            f'/posts/{self.post_id}/': 200,
             '/unexisting_page/': 404
         }
         for url, status_code in check_urls.items():
@@ -80,7 +80,7 @@ class PostURLTest(TestCase):
         авторизованого пользователя"""
 
         response = self.authorized_client.get(
-            '/posts/' + self.post_id + '/edit/')
+            f'/posts/{self.post_id}/edit/')
         self.assertEqual(
             response.status_code,
             200,
@@ -96,10 +96,10 @@ class PostURLTest(TestCase):
             response,
             '/auth/login/?next=/create/'
         )
-        response = self.guest_client.get('/posts/' + self.post_id + '/edit/')
+        response = self.guest_client.get(f'/posts/{self.post_id}/edit/')
         self.assertRedirects(
             response,
-            '/auth/login/?next=/posts/' + self.post_id + '/edit/'
+            f'/auth/login/?next=/posts/{self.post_id}/edit/'
         )
 
     def test_edit_not_author_redirects(self):
@@ -108,11 +108,8 @@ class PostURLTest(TestCase):
         пока я не узнаю куда надо =) Это мы и проверим"""
 
         response = self.authorized_client_not_author.get(
-            '/posts/' + self.post_id + '/edit/')
+            f'/posts/{self.post_id}/edit/')
         self.assertRedirects(
             response,
-            '/posts/' + self.post_id + '/'
+            f'/posts/{self.post_id}/'
         )
-
-
-
