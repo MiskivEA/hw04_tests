@@ -126,11 +126,13 @@ class PostViewTest(TestCase):
             len(response.context['page_obj']),
             PostViewTest.group.posts.count()
         )
+
+        post_for_check = PostViewTest.group.posts.first()
         self.assertEqual(
             response.context['page_obj'][0].text,
-            PostViewTest.group.posts.first().text
+            post_for_check.text
         )
         self.assertEqual(
             response.context['page_obj'][0].group.pk,
-            PostViewTest.group.posts.first().group.pk
+            post_for_check.group.pk
         )

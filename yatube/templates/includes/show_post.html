@@ -1,4 +1,5 @@
 {% with request.resolver_match.view_name as view_name %}
+	{% load thumbnail %}
 <div class="card">
 	<div class="card-header">
 		Дата публикации: {{ item.pub_date|date:"d E Y" }}
@@ -12,6 +13,9 @@
        <br> Группа: <a href="{% url 'posts:group_list' item.group.slug %}" > {{ item.group }} </a>
       {% endif %}
 		</h6>
+		{% thumbnail item.image "960x339" crop="center" upscale=True as im %}
+      <img class="card-img my-2" src="{{ im.url }}">
+    {% endthumbnail %}
 		<p class="card-text">{{ item.text }}</p>
 		<div class="card-footer">
 			<a href="{% url 'posts:posts' item.pk %}" >Подробная информация</a>
